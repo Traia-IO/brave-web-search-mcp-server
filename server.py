@@ -260,7 +260,7 @@ def create_app_with_middleware():
     logger.info("   - Dual mode: API key OR payment")
     
     # Add health check endpoint (bypasses middleware)
-    @app.route("/health", methods=["GET"])
+    # Starlette has no Flask-style @app.route(); removed upstream.
     async def health_check(request: Request) -> JSONResponse:
         """Health check endpoint for container orchestration."""
         return JSONResponse(
@@ -270,6 +270,8 @@ def create_app_with_middleware():
                 "timestamp": datetime.now().isoformat()
             }
         )
+    from starlette.routing import Route
+    app.routes.append(Route("/health", health_check, methods=["GET"]))
     logger.info("✅ Added /health endpoint")
     
     return app
